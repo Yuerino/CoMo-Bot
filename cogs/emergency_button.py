@@ -19,7 +19,7 @@ class EmergencyButton(commands.Cog, name="Emergency Button"):
             channel = await self.bot.fetch_channel(payload.channel_id)
             msg = await channel.fetch_message(payload.message_id)
 
-            reporter_msg = await self.ask_reporter(payload.member, msg)
+            reporter_msg = await self.ask_reporter_user(payload.member, msg)
             reported_msg = await self.ask_reported_user(msg)
 
             ticket_channel = await self.bot.fetch_channel(self.bot.config.TICKET_CHANNEL_ID)
@@ -40,7 +40,7 @@ class EmergencyButton(commands.Cog, name="Emergency Button"):
 
             await ticket_channel.send(ticket_msg)
 
-    async def ask_reporter(self, reporter_user: discord.Member, reported_msg: discord.Message) -> Optional[str]:
+    async def ask_reporter_user(self, reporter_user: discord.Member, reported_msg: discord.Message) -> Optional[str]:
         await reporter_user.send(f"Hello {reporter_user.display_name}, you reported this message recently."
                                  f"\n<{reported_msg.jump_url}>\nPlease give staff some information about the report :)."
                                  f" Type `exit` to cancel this process and summon a human instead :)")
