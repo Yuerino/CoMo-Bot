@@ -16,5 +16,9 @@ GUILD_IDS = [
     42424242424242424242
 ]
 
+STAFF_IDS = [
+    42424242424242424242
+]
+
 # Ticket channel for emergency button
 TICKET_CHANNEL_ID = 42424242424242

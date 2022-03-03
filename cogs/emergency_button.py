@@ -40,6 +40,10 @@ class EmergencyButton(commands.Cog, name="Emergency Button"):
 
             await ticket_channel.send(ticket_msg)
 
+            for staff_id in self.bot.config.STAFF_IDS:
+                staff = await self.bot.fetch_user(staff_id)
+                await staff.send(f"Hello {staff.display_name}, we have a new report in the ticket channel!")
+
     async def ask_reporter_user(self, reporter_user: discord.Member, reported_msg: discord.Message) -> Optional[str]:
         await reporter_user.send(f"Hello {reporter_user.display_name}, you reported this message recently."
                                  f"\n<{reported_msg.jump_url}>\nPlease give staff some information about the report :)."
