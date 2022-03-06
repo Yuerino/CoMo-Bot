@@ -3,7 +3,12 @@ with [Discord.js](https://discord.js.org)
 
 # Installation
 
+- Install latest Node v17
 - Clone the project
-- Edit .env_example with your discord bot token and rename it to .env
-- Edit config_example.py with your configuration and rename it to config.py
-- Start the bot by either run start.py or use Docker
+- Edit config_example.json with your discord bot token and rename it to config.json
+- Run npm install to install dependency packages
+- Run npm run start to start bot
+
+# Build for production
+- Run npm run build to build bot to javascript
+- Run npm run start:prod to start
