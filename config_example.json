@@ -1,0 +1,7 @@
+{
+  "botToken": "your bot token here",
+  "guildIDs": [
+    "discord server ID"
+  ],
+  "environment": "dev"
+}
