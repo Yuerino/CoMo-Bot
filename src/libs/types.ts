@@ -1,9 +1,9 @@
-import {WobBot} from "./WobBot";
+import {CoMoBot} from "./CoMoBot";
 import {ApplicationCommandDataResolvable, CommandInteraction, CommandInteractionOptionResolver} from "discord.js";
 import {SlashCommandBuilder} from "@discordjs/builders";
 
 interface CommandRunOptions {
-    client: WobBot;
+    client: CoMoBot;
     interaction: CommandInteraction;
     args: CommandInteractionOptionResolver;
 }
@@ -20,7 +20,7 @@ export interface IDeployCommandOptions {
     readonly guildIDs?: string[]
 }
 
-export interface WobBotConfig {
+export interface CoMoBotConfig {
     readonly botToken: string,
     readonly guildIDs: string[],
     readonly ticketChannelID: string,

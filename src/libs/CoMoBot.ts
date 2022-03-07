@@ -1,17 +1,17 @@
 import {ApplicationCommandDataResolvable, Client, ClientEvents, Collection, Intents} from "discord.js";
-import {ICommandOptions, IDeployCommandOptions, WobBotConfig} from "./types";
+import {ICommandOptions, IDeployCommandOptions, CoMoBotConfig} from "./types";
 import * as fs from 'fs';
 import path from "path";
 import {Event} from "./Event";
 import ReportManager from "./ReportManager";
 
-export class WobBot extends Client {
+export class CoMoBot extends Client {
     public readonly commands: Collection<string, ICommandOptions> = new Collection();
-    public readonly config: WobBotConfig;
+    public readonly config: CoMoBotConfig;
     public reportManager?: ReportManager;
 
     // TODO: look up on intents
-    constructor(config: WobBotConfig) {
+    constructor(config: CoMoBotConfig) {
         super({
             intents: [
                 Intents.FLAGS.GUILDS,

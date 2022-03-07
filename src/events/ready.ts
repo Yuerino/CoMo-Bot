@@ -1,6 +1,6 @@
 import {Event} from "../libs/Event";
-import {wobbot} from "../wobbot";
+import {comobot} from "../comobot";
 
-export default new Event(wobbot, "ready", (): void => {
+export default new Event(comobot, "ready", (): void => {
     console.log("Bot is ready!");
 });

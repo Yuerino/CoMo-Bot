@@ -1,9 +1,9 @@
 import {ClientEvents} from "discord.js";
-import {WobBot} from "./WobBot";
+import {CoMoBot} from "./CoMoBot";
 
 export class Event<Key extends keyof ClientEvents> {
     constructor(
-        public readonly client: WobBot,
+        public readonly client: CoMoBot,
         public readonly event: Key,
         public readonly run: (...args: ClientEvents[Key]) => void
     ) {

@@ -4,8 +4,8 @@
   "description": "A basic content moderation bot for 42 Wolfsburg",
   "main": "dist/wobbot.ts",
   "scripts": {
-    "start": "ts-node src/wobbot.ts",
-    "start:dev": "ts-node-dev src/wobbot.ts",
+    "start": "ts-node src/comobot.ts",
+    "start:dev": "ts-node-dev src/comobot.ts",
     "start:prod": "node dist/wobbot.js",
     "build": "tsc",
     "watch": "tsc -w",

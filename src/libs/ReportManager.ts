@@ -12,16 +12,16 @@ import {
     User
 } from "discord.js";
 import {bold} from "@discordjs/builders";
-import {WobBot} from "./WobBot";
+import {CoMoBot} from "./CoMoBot";
 import {ReportTicket} from "./ReportTicket";
 
 export default class ReportManager {
-    private readonly client: WobBot;
+    private readonly client: CoMoBot;
     private readonly userConcurrencyReport: Collection<string, void>;
     private ticketChannel?: TextChannel | null;
 
     constructor(
-        client: WobBot,
+        client: CoMoBot,
     ) {
         this.client = client;
         this.userConcurrencyReport = new Collection<string, void>();
