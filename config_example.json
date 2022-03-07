@@ -3,5 +3,7 @@
   "guildIDs": [
     "discord server ID"
   ],
+  "ticketChannelID": "ticket channel ID",
+  "reportEmoji": "‼️",
   "environment": "dev"
 }

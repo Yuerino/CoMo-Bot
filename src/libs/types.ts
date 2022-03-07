@@ -22,6 +22,8 @@ export interface IDeployCommandOptions {
 
 export interface WobBotConfig {
     readonly botToken: string,
-    readonly guildIDs: [],
+    readonly guildIDs: string[],
+    readonly ticketChannelID: string,
+    readonly reportEmoji: string,
     readonly environment: "dev" | "prod"
 }

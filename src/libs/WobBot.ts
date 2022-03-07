@@ -3,10 +3,12 @@ import {ICommandOptions, IDeployCommandOptions, WobBotConfig} from "./types";
 import * as fs from 'fs';
 import path from "path";
 import {Event} from "./Event";
+import ReportManager from "./ReportManager";
 
 export class WobBot extends Client {
-    readonly commands: Collection<string, ICommandOptions> = new Collection();
-    readonly config: WobBotConfig;
+    public readonly commands: Collection<string, ICommandOptions> = new Collection();
+    public readonly config: WobBotConfig;
+    public reportManager?: ReportManager;
 
     // TODO: look up on intents
     constructor(config: WobBotConfig) {
@@ -26,6 +28,9 @@ export class WobBot extends Client {
     async start(): Promise<void> {
         await this.registerModules();
         await this.login(this.config.botToken);
+
+        this.reportManager = await new ReportManager(this).init();
+        this.on("messageReactionAdd", this.reportManager!.messageReactionAddHandler.bind(this.reportManager));
     }
 
     async deployCommands({commands, guildIDs}: IDeployCommandOptions): Promise<void> {
