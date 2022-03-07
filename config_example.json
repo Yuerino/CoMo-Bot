@@ -4,6 +4,6 @@
     "discord server ID"
   ],
   "ticketChannelID": "ticket channel ID",
-  "reportEmoji": "‼️",
+  "reportEmoji": "\uD83D\uDFE5",
   "environment": "dev"
 }

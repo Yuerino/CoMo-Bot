@@ -37,7 +37,7 @@ export default class ReportManager {
         if (user.partial) user = await user.fetch();
 
         if (reaction.message.guild && !this.client.config.guildIDs.includes(reaction.message.guild.id)) return;
-        if (reaction.emoji.toString() !== this.client.config.reportEmoji) return;
+        if (reaction.emoji.toString() != this.client.config.reportEmoji) return;
         if (this.userConcurrencyReport.has(user.id)) return;
 
         this.userConcurrencyReport.set(user.id);
@@ -144,7 +144,7 @@ export default class ReportManager {
                     .setStyle("SECONDARY")
             );
 
-        await ticket.userDMChannel!.send({embeds: [embed], components: [buttonRow]});
+        const botMessage = await ticket.userDMChannel!.send({embeds: [embed], components: [buttonRow]});
 
         const filter = (i: MessageComponentInteraction): boolean => i.user.id === ticket.user!.id;
         return ticket.userDMChannel!.awaitMessageComponent({filter, time: 60 * 1000})
@@ -161,6 +161,7 @@ export default class ReportManager {
                 return false;
             })
             .catch(async () => {
+                await botMessage.edit({embeds: [embed], components: []});
                 await this.handleCancel(ticket);
                 return false;
             });
