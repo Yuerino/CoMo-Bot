@@ -9,4 +9,5 @@ COPY config.json ./
 
 RUN npm install
 RUN npm run build
-RUN npm run start:prod
+
+CMD ["node", "dist/comobot.js"]
