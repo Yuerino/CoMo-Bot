@@ -115,7 +115,7 @@ export class ReportManager {
         this.userConcurrencyReport.delete(ticket.user.id);
 
         await this.submitTicket(ticket);
-        await this.newTicketNotify(ticket);
+        await this.notifyNewTicket(ticket);
     }
 
     private async submitTicket(ticket: ReportTicket) {
@@ -272,15 +272,17 @@ export class ReportManager {
         await ticket.userDMChannel.send({embeds: [embed]});
     }
 
-    private async newTicketNotify(ticket: ReportTicket) {
+    private async notifyNewTicket(ticket: ReportTicket) {
         let embed = new MessageEmbed()
             .setColor(ticket.isEmergency() ? "RED" : "BLUE")
             .setTitle(`Report Ticket #${ticket.id}`);
 
+        const textChannelURL = `https://discord.com/channels/${this.ticketChannel!.guildId}/${this.ticketChannel!.id}`;
+
         for (const staffID of this.client.config.onDutyStaffIDs) {
             const staff = await this.client.users.fetch(staffID);
             await ticket.ticketThread?.members.add(staff);
-            embed.setDescription(`Hello ${staff.username}. We have a new ${bold(capitalize(ticket.case!))} ticket in the ticket channel!`);
+            embed.setDescription(`Hello ${staff.username}. We have a new ${bold(capitalize(ticket.case!))} ticket in the ${hyperlink("ticket channel", textChannelURL)}!`);
             await staff.send({embeds: [embed]});
         }
     }
