@@ -4,8 +4,8 @@ import {Command} from "../libs/Command";
 export default new Command({
     commandDMOnly: true,
     data: new SlashCommandBuilder()
-        .setName("emergency")
-        .setDescription("delete and report a message"),
+        .setName("report")
+        .setDescription("report a message"),
     run: async ({client, interaction}) => {
         await client.reportManager.handleCommand(interaction);
     }

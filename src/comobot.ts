@@ -8,3 +8,7 @@ export const comobot = new CoMoBot(config);
 (async (): Promise<void> => {
     await comobot.start();
 })();
+
+comobot.on("error", (err) => {
+    console.log(err);
+});

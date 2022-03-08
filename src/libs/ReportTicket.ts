@@ -1,56 +1,54 @@
-import {DMChannel, Message, PartialMessage, PartialUser, User} from "discord.js";
+import {DMChannel, Message, ThreadChannel, User} from "discord.js";
+import {TicketOptions} from "./types";
 
 export class ReportTicket {
-    public user?: User;
-    public message?: Message;
-    public id?: number;
+    public readonly id: number;
+    public readonly user: User;
+    public userDMChannel: DMChannel;
+    public userDescription?: string;
     public case?: "report" | "emergency";
-    public userDMChannel?: DMChannel;
-    public userDescription: string = "Empty";
-    public reportedUser?: User;
-    public messageContent?: string = "";
-    private readonly _isByReaction: boolean = false;
+    private readonly createByReaction: boolean = false;
+    public readonly createTime: Date = new Date();
+    public ticketThread?: ThreadChannel;
 
-    constructor(isByReaction: boolean = false) {
-        this._isByReaction = isByReaction;
+    constructor(ticketOptions: TicketOptions) {
+        this.id = this.createTime.getTime();
+        this.user = ticketOptions.user;
+        this.userDMChannel = ticketOptions.userDMChannel;
+        if (ticketOptions.message) this.message = ticketOptions.message;
+        if (ticketOptions.createByReaction) this.createByReaction = ticketOptions.createByReaction;
     }
 
-    public async createTicket(
-        reporterUser: User | PartialUser,
-        reportedMessage?: Message | PartialMessage
-    ): Promise<ReportTicket> {
-        this.id = this.getNewID();
+    private _message!: Message;
 
-        if (reporterUser.partial) reporterUser = await reporterUser.fetch();
-        this.user = reporterUser;
-        this.userDMChannel = await this.user.createDM();
-
-        if (reportedMessage) {
-            if (reportedMessage.partial) reportedMessage = await reportedMessage.fetch();
-            this.message = reportedMessage;
-            this.reportedUser = this.message.author;
-            this.messageContent = this.message.content;
-        }
-        return this;
+    public get message() {
+        return this._message;
     }
 
-    public async setMessage(reportedMessage: Message | PartialMessage): Promise<void> {
-        if (reportedMessage.partial) reportedMessage = await reportedMessage.fetch();
-        this.message = reportedMessage;
-        this.reportedUser = this.message.author;
-        this.messageContent = this.message.content;
+    public set message(m: Message) {
+        this._message = m;
+        this._reportedUser = m.author;
+        this._messageContent = m.cleanContent;
     }
 
-    public isEmergency(): boolean {
+    private _messageContent: string = "";
+
+    public get messageContent() {
+        return this._messageContent;
+    }
+
+    private _reportedUser?: User;
+
+    public get reportedUser() {
+        return this._reportedUser;
+    }
+
+    public isEmergency() {
         if (!this.case) return false;
         return this.case === "emergency";
     }
 
-    public isByReaction(): boolean {
-        return this._isByReaction;
-    }
-
-    private getNewID(): number {
-        return 42;
+    public isByReaction() {
+        return this.createByReaction;
     }
 }

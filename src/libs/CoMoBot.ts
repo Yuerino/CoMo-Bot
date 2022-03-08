@@ -1,76 +1,89 @@
-import {ApplicationCommandDataResolvable, Client, ClientEvents, Collection, Intents} from "discord.js";
-import {ICommandOptions, IDeployCommandOptions, CoMoBotConfig} from "./types";
+import {ApplicationCommandDataResolvable, Client, ClientEvents, Collection, Intents, TextChannel} from "discord.js";
+import {CoMoBotConfig, DeployCommandOptions, EventOptions} from "./types";
 import * as fs from 'fs';
 import path from "path";
-import {Event} from "./Event";
-import ReportManager from "./ReportManager";
+import {ReportManager} from "./ReportManager";
+import {Command} from "./Command";
 
 export class CoMoBot extends Client {
-    public readonly commands: Collection<string, ICommandOptions> = new Collection();
+    public readonly commands: Collection<string, Command> = new Collection<string, Command>();
     public readonly config: CoMoBotConfig;
-    public reportManager?: ReportManager;
+    public readonly reportManager: ReportManager;
 
-    // TODO: look up on intents
     constructor(config: CoMoBotConfig) {
         super({
             intents: [
                 Intents.FLAGS.GUILDS,
                 Intents.FLAGS.GUILD_MESSAGES,
                 Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+                Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
                 Intents.FLAGS.DIRECT_MESSAGES,
                 Intents.FLAGS.DIRECT_MESSAGE_REACTIONS
             ],
             partials: ['MESSAGE', 'CHANNEL', 'REACTION'],
         });
         this.config = config;
+        this.reportManager = new ReportManager({client: this, expireTime: 5 * 60 * 1000});
     }
 
-    async start(): Promise<void> {
+    public async start() {
         await this.registerModules();
         await this.login(this.config.botToken);
-
-        this.reportManager = await new ReportManager(this).init();
-        this.on("messageReactionAdd", this.reportManager!.messageReactionAddHandler.bind(this.reportManager));
+        await this.reportManager.init();
     }
 
-    async deployCommands({commands, guildIDs}: IDeployCommandOptions): Promise<void> {
-        if (guildIDs) {
-            for (const guildID of guildIDs) {
-                await this.guilds.cache.get(guildID)?.commands.set(commands);
-                console.log(`Deploying commands to ${guildID}`);
+    public async getMessageByURL(messageURL: string) {
+        const messageURLSplit = messageURL.split('/');
+        if (!messageURLSplit.length) return;
+        const messageChannel = await this.channels.fetch(messageURLSplit[5]).catch(() => {return;});
+        if (!messageChannel || !(messageChannel instanceof TextChannel)) return;
+        return await messageChannel.messages.fetch(messageURLSplit[6]).catch(() => {return;});
+    }
+
+    private async deployCommands({commands, guildIDs}: DeployCommandOptions) {
+        if (this.config.environment === "dev") {
+            if (guildIDs) {
+                for (const guildID of guildIDs) {
+                    await this.guilds.cache.get(guildID)?.commands.set(commands);
+                    console.log(`Deploying commands to ${guildID}`);
+                }
             }
-        }
-        if (this.config.environment === 'prod') {
+        } else if (this.config.environment === "prod") {
+            if (guildIDs) {
+                for (const guildID of guildIDs) {
+                    await this.guilds.cache.get(guildID)?.commands.set([]);
+                }
+            }
             await this.application?.commands.set(commands);
             console.log(`Deploying commands globally`);
         }
     }
 
-    async registerModules(): Promise<void> {
+    private async registerModules() {
         const slashCommands: ApplicationCommandDataResolvable[] = [];
-        const commandFiles: string[] = fs.readdirSync(path.join(__dirname, "../commands"))
+        const commandFiles = fs.readdirSync(path.join(__dirname, "../commands"))
             .filter(file => ['.ts', '.js'].some(pattern => file.endsWith(pattern)));
 
         for (const filePath of commandFiles) {
-            const command: ICommandOptions = (await import(path.join("../commands", filePath)))?.default;
+            const command: Command = (await import(path.join("../commands", filePath)))?.default;
             if (!command.data.name) continue;
 
             this.commands.set(command.data.name, command);
             slashCommands.push(command.data.toJSON());
         }
 
-        this.once("ready", async (): Promise<void> => {
-            await this.deployCommands({
-                commands: slashCommands, guildIDs: this.config.guildIDs
-            });
+        this.once("ready", async () => {
+            await this.deployCommands({commands: slashCommands, guildIDs: this.config.guildIDs});
         });
 
-        const eventFiles: string[] = fs.readdirSync(path.join(__dirname, "../events"))
+        const eventFiles = fs.readdirSync(path.join(__dirname, "../events"))
             .filter(file => ['.ts', '.js'].some(pattern => file.endsWith(pattern)));
 
         for (const filePath of eventFiles) {
-            const event: Event<keyof ClientEvents> = (await import(path.join("../events", filePath)))?.default;
+            const event: EventOptions<keyof ClientEvents> = (await import(path.join("../events", filePath)))?.default;
             this.on(event.event, event.run);
         }
+
+        this.on("messageReactionAdd", this.reportManager.messageReactionAddHandler.bind(this.reportManager));
     }
 }

@@ -5,5 +5,8 @@
   ],
   "ticketChannelID": "ticket channel ID",
   "reportEmoji": "\uD83D\uDFE5",
-  "environment": "dev"
+  "onDutyStaffIDs": [
+    "bot will ping these staff id on new ticket"
+  ],
+  "environment": "prod"
 }
