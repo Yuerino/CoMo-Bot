@@ -1,6 +1,7 @@
 import {
     Collection,
     CommandInteraction,
+    DiscordAPIError,
     Message,
     MessageActionRow,
     MessageButton,
@@ -60,19 +61,28 @@ export class ReportManager {
     }
 
     public async messageReactionAddHandler(reaction: MessageReaction | PartialMessageReaction, user: User | PartialUser) {
-        if (reaction.partial) reaction = await reaction.fetch();
+        try {
+            if (reaction.partial) reaction = await reaction.fetch();
 
-        if (reaction.message.guild && !this.client.config.guildIDs.includes(reaction.message.guild.id)) return;
-        if (reaction.emoji.toString() != this.client.config.reportEmoji) return;
-        if (this.userConcurrencyReport.has(user.id)) return await ReportManager.handleMaxConcurrency(user);
+            if (reaction.message.guild && !this.client.config.guildIDs.includes(reaction.message.guild.id)) return;
+            if (reaction.emoji.toString() != this.client.config.reportEmoji) return;
+            if (this.userConcurrencyReport.has(user.id)) return await ReportManager.handleMaxConcurrency(user);
 
-        this.userConcurrencyReport.set(user.id);
+            this.userConcurrencyReport.set(user.id);
 
-        const ticket = await this.createTicket({user: user, message: reaction.message, createByReaction: true});
+            const ticket = await this.createTicket({user: user, message: reaction.message, createByReaction: true});
 
-        if (!await this.askUserOptions(ticket)) return;
+            if (!await this.askUserOptions(ticket)) return;
 
-        await this.handleReport(ticket);
+            await this.handleReport(ticket);
+        } catch (err) {
+            if (err instanceof DiscordAPIError && err.code === 50007) {
+                await user.fetch();
+                await reaction.message.reactions.resolve(this.client.config.reportEmoji)?.users.remove(user as User);
+            } else {
+                throw(err);
+            }
+        }
     }
 
     public async handleCommand(interaction: CommandInteraction) {

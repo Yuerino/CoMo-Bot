@@ -12,3 +12,8 @@ export const comobot = new CoMoBot(config);
 comobot.on("error", (err) => {
     console.log(err);
 });
+
+process.on('unhandledRejection', (error: Error, promise) => {
+    console.error(`Unhandled promise rejection: Promise ${promise}`);
+    console.dir(error.stack);
+});
