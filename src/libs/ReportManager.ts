@@ -37,6 +37,7 @@ export class ReportManager {
 
         const embed = new MessageEmbed()
             .setColor("GREY")
+            .setAuthor({name: "CoMo Bot", url: "https://github.com/Yuerino/CoMo-Bot"})
             .setTitle("Error")
             .setDescription("Please finish your current report ticket first before reporting another one!");
 
@@ -134,6 +135,7 @@ export class ReportManager {
 
         const replyEmbed = new MessageEmbed()
             .setColor(ticket.isEmergency() ? "RED" : "BLUE")
+            .setAuthor({name: "CoMo Bot", url: "https://github.com/Yuerino/CoMo-Bot"})
             .setTitle(`Report Ticket #${ticket.id}`)
             .setDescription(`The ticket has been created. The staffs will review it and reach out to you soon!`);
         await ticket.userDMChannel.send({embeds: [replyEmbed]});
@@ -160,6 +162,7 @@ export class ReportManager {
         const messageText = ticket.isEmergency() ? "A message" : hyperlink("This message", ticket.message.url);
         const embed = new MessageEmbed()
             .setColor(ticket.isEmergency() ? "RED" : "BLUE")
+            .setAuthor({name: "CoMo Bot", url: "https://github.com/Yuerino/CoMo-Bot"})
             .setTitle(`Report Ticket #${ticket.id} - ${time(ticket.createTime)}`)
             .setDescription(`${messageText} has been flagged recently.`)
             .setFields(
@@ -211,6 +214,7 @@ export class ReportManager {
     private async askUserOptions(ticket: ReportTicket) {
         const embed = new MessageEmbed()
             .setColor("BLUE")
+            .setAuthor({name: "CoMo Bot", url: "https://github.com/Yuerino/CoMo-Bot"})
             .setTitle(`Report Ticket #${ticket.id}`)
             .setDescription(`You flagged ${hyperlink("this message", ticket.message.url)} as inappropriate.\nPlease choose one of these 3 options:`)
             .addFields(
@@ -276,6 +280,7 @@ export class ReportManager {
         const optionEmergencyInfo = ticket.isEmergency() ? `The inappropriate message is ${bold("deleted and archived")} for the staff to check!\n` : "";
         const embed = new MessageEmbed()
             .setColor(ticket.isEmergency() ? "RED" : "BLUE")
+            .setAuthor({name: "CoMo Bot", url: "https://github.com/Yuerino/CoMo-Bot"})
             .setTitle(`Report Ticket #${ticket.id}`)
             .setDescription(`You chose the ${bold(capitalize(ticket.case!))} option.\n${optionEmergencyInfo}Please tell us more detail about this report.`)
             .setFooter({text: "This report will be automatically submitted after 5 minutes of inactivity"});
@@ -296,6 +301,7 @@ export class ReportManager {
     private async handleCancel(ticket: ReportTicket) {
         let embed = new MessageEmbed()
             .setColor("GREY")
+            .setAuthor({name: "CoMo Bot", url: "https://github.com/Yuerino/CoMo-Bot"})
             .setTitle(`Report Ticket #${ticket.id}`)
             .setDescription(`${bold("False Alarm!")} This ticket is discarded ${ticket.isByReaction() ? "and your reaction will be removed" : ""}.`);
 
@@ -308,7 +314,9 @@ export class ReportManager {
     private async notifyNewTicket(ticket: ReportTicket) {
         let embed = new MessageEmbed()
             .setColor(ticket.isEmergency() ? "RED" : "BLUE")
-            .setTitle(`Report Ticket #${ticket.id}`);
+            .setAuthor({name: "CoMo Bot", url: "https://github.com/Yuerino/CoMo-Bot"})
+            .setTitle(`Report Ticket #${ticket.id}`)
+            .setTimestamp();
 
         const textChannelURL = `https://discord.com/channels/${this.ticketChannel!.guildId}/${this.ticketChannel!.id}`;
 
@@ -323,6 +331,7 @@ export class ReportManager {
     private async askUserMessageURL(ticket: ReportTicket, interaction: CommandInteraction) {
         const embed = new MessageEmbed()
             .setColor("BLUE")
+            .setAuthor({name: "CoMo Bot", url: "https://github.com/Yuerino/CoMo-Bot"})
             .setTitle(`Report Ticket`)
             .setDescription("Please enter message URL that you want to report.")
             .setFooter({text: "This report will be automatically cancelled after 5 minutes of inactivity"});
@@ -343,6 +352,7 @@ export class ReportManager {
     private async handleWrongURL(ticket: ReportTicket) {
         const embed = new MessageEmbed()
             .setColor("GREY")
+            .setAuthor({name: "CoMo Bot", url: "https://github.com/Yuerino/CoMo-Bot"})
             .setTitle("Error")
             .setDescription("You entered an invalid message URL. Please try again!")
             .setFooter({text: "Hints: Right click a message and click on `Copy Message Link` option."});
