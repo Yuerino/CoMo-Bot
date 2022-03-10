@@ -193,6 +193,11 @@ export class ReportManager {
                     name: "Message Time",
                     value: time(ticket.message.createdAt),
                     inline: true
+                },
+                {
+                    name: "Message ID",
+                    value: ticket.message.id,
+                    inline: true
                 });
 
         await ticket.ticketThread.send({embeds: [embed]})
