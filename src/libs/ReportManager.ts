@@ -195,7 +195,10 @@ export class ReportManager {
                     inline: true
                 });
 
-        await ticket.ticketThread.send({embeds: [embed]});
+        await ticket.ticketThread.send({embeds: [embed]})
+            .then(async (m) => {
+                await m.pin()
+            });
 
         await this.webhook!.send({
             username: `${ticket.message.author.username} - (Original message)`,
