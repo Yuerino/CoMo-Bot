@@ -39,7 +39,8 @@ export class ReportManager {
             .setColor("GREY")
             .setAuthor({name: "CoMo Bot", url: "https://github.com/Yuerino/CoMo-Bot"})
             .setTitle("Error")
-            .setDescription("Please finish your current report ticket first before reporting another one!");
+            .setDescription("Please finish your current report ticket first before reporting another one!")
+            .setTimestamp();
 
         if (interaction) {
             await interaction.followUp({embeds: [embed]});
@@ -137,7 +138,8 @@ export class ReportManager {
             .setColor(ticket.isEmergency() ? "RED" : "BLUE")
             .setAuthor({name: "CoMo Bot", url: "https://github.com/Yuerino/CoMo-Bot"})
             .setTitle(`Report Ticket #${ticket.id}`)
-            .setDescription(`The ticket has been created. The staffs will review it and reach out to you soon!`);
+            .setDescription(`The ticket has been created. The staffs will review it and reach out to you soon!`)
+            .setTimestamp();
         await ticket.userDMChannel.send({embeds: [replyEmbed]});
         this.userConcurrencyReport.delete(ticket.user.id);
 
@@ -165,6 +167,7 @@ export class ReportManager {
             .setAuthor({name: "CoMo Bot", url: "https://github.com/Yuerino/CoMo-Bot"})
             .setTitle(`Report Ticket #${ticket.id} - ${time(ticket.createTime)}`)
             .setDescription(`${messageText} has been flagged recently.`)
+            .setTimestamp()
             .setFields(
                 {
                     name: "Type of report",
@@ -217,6 +220,7 @@ export class ReportManager {
             .setAuthor({name: "CoMo Bot", url: "https://github.com/Yuerino/CoMo-Bot"})
             .setTitle(`Report Ticket #${ticket.id}`)
             .setDescription(`You flagged ${hyperlink("this message", ticket.message.url)} as inappropriate.\nPlease choose one of these 3 options:`)
+            .setTimestamp()
             .addFields(
                 {
                     name: "Report",
@@ -283,7 +287,8 @@ export class ReportManager {
             .setAuthor({name: "CoMo Bot", url: "https://github.com/Yuerino/CoMo-Bot"})
             .setTitle(`Report Ticket #${ticket.id}`)
             .setDescription(`You chose the ${bold(capitalize(ticket.case!))} option.\n${optionEmergencyInfo}Please tell us more detail about this report.`)
-            .setFooter({text: "This report will be automatically submitted after 5 minutes of inactivity"});
+            .setFooter({text: "This report will be automatically submitted after 5 minutes of inactivity"})
+            .setTimestamp();
 
         await ticket.userDMChannel.send({embeds: [embed]});
 
@@ -303,7 +308,8 @@ export class ReportManager {
             .setColor("GREY")
             .setAuthor({name: "CoMo Bot", url: "https://github.com/Yuerino/CoMo-Bot"})
             .setTitle(`Report Ticket #${ticket.id}`)
-            .setDescription(`${bold("False Alarm!")} This ticket is discarded ${ticket.isByReaction() ? "and your reaction will be removed" : ""}.`);
+            .setDescription(`${bold("False Alarm!")} This ticket is discarded ${ticket.isByReaction() ? "and your reaction will be removed" : ""}.`)
+            .setTimestamp();
 
         if (ticket.isByReaction()) await ticket.message.reactions.resolve(this.client.config.reportEmoji)?.users.remove(ticket.user);
 
@@ -334,7 +340,8 @@ export class ReportManager {
             .setAuthor({name: "CoMo Bot", url: "https://github.com/Yuerino/CoMo-Bot"})
             .setTitle(`Report Ticket`)
             .setDescription("Please enter message URL that you want to report.")
-            .setFooter({text: "This report will be automatically cancelled after 5 minutes of inactivity"});
+            .setFooter({text: "This report will be automatically cancelled after 5 minutes of inactivity"})
+            .setTimestamp();
 
         await interaction.followUp({embeds: [embed]});
 
@@ -355,7 +362,8 @@ export class ReportManager {
             .setAuthor({name: "CoMo Bot", url: "https://github.com/Yuerino/CoMo-Bot"})
             .setTitle("Error")
             .setDescription("You entered an invalid message URL. Please try again!")
-            .setFooter({text: "Hints: Right click a message and click on `Copy Message Link` option."});
+            .setFooter({text: "Hints: Right click a message and click on `Copy Message Link` option."})
+            .setTimestamp();
 
         this.userConcurrencyReport.delete(ticket.user.id);
         await ticket.userDMChannel.send({embeds: [embed]});
