@@ -11,9 +11,10 @@ import {
     PartialMessageReaction,
     PartialUser,
     TextChannel,
-    User
+    User,
+    Webhook
 } from "discord.js";
-import {blockQuote, bold, hyperlink, time} from "@discordjs/builders";
+import {bold, hyperlink, italic, time} from "@discordjs/builders";
 import {CoMoBot} from "./CoMoBot";
 import {ReportTicket} from "./ReportTicket";
 import {CreateTicketOptions, ReportManagerOptions, TicketOptions} from "./types";
@@ -23,6 +24,7 @@ export class ReportManager {
     private readonly client: CoMoBot;
     private readonly userConcurrencyReport: Collection<string, void> = new Collection<string, void>();
     private ticketChannel: TextChannel | null = null;
+    private webhook?: Webhook;
     private readonly expireTime: number = 5 * 60 * 1000;
 
     constructor(reportManagerOptions: ReportManagerOptions) {
@@ -48,7 +50,20 @@ export class ReportManager {
     public async init(): Promise<ReportManager> {
         this.ticketChannel = await this.client.channels.fetch(this.client.config.ticketChannelID) as TextChannel | null;
         if (!this.ticketChannel) throw new Error("No ticket channel found.");
+
+        const webhooks = await this.ticketChannel.fetchWebhooks();
+        this.webhook = webhooks.find(wh => wh.owner == (this.client.user as User))
+        if (!this.webhook) this.webhook = await this.createWebhook();
+        if (!this.webhook) throw new Error("Failed to create webhook.");
+
         return this;
+    }
+
+    private async createWebhook() {
+        return await this.ticketChannel!.createWebhook("CoMo-Bot", {
+            avatar: this.client.user!.avatarURL() ?? undefined,
+            reason: "Webhook for CoMo-Bot to send archived message and user description."
+        });
     }
 
     public async createTicket(createTicketOptions: CreateTicketOptions) {
@@ -164,14 +179,6 @@ export class ReportManager {
                     inline: true
                 },
                 {
-                    name: "User Description",
-                    value: ticket.userDescription ? blockQuote(ticket.userDescription) : "Empty"
-                },
-                {
-                    name: "Reported Message",
-                    value: blockQuote(ticket.messageContent)
-                },
-                {
                     name: "Message Channel",
                     value: channelLink ? channelLink : "Could not find",
                     inline: true
@@ -183,6 +190,22 @@ export class ReportManager {
                 });
 
         await ticket.ticketThread.send({embeds: [embed]});
+
+        await this.webhook!.send({
+            username: `${ticket.message.author.username} - (Original message)`,
+            avatarURL: ticket.message.author.avatarURL() ?? undefined,
+            threadId: ticket.ticketThread.id,
+            content: ticket.message.cleanContent != "" ? ticket.message.cleanContent : undefined,
+            files: [...ticket.message.attachments.values()]
+        });
+
+        await this.webhook!.send({
+            username: `${ticket.user.username} - (User description)`,
+            avatarURL: ticket.user.avatarURL() ?? undefined,
+            threadId: ticket.ticketThread.id,
+            content: ticket.userDescriptionMessage?.cleanContent ?? italic("User didn't provide any description."),
+            files: [...ticket.userDescriptionMessage?.attachments.values() ?? []]
+        });
     }
 
     private async askUserOptions(ticket: ReportTicket) {
@@ -262,7 +285,7 @@ export class ReportManager {
         const filter = (m: Message): boolean => m.author.id === ticket.user.id;
         return ticket.userDMChannel.awaitMessages({filter, max: 1, time: this.expireTime, errors: ["time"]})
             .then(async (messages) => {
-                ticket.userDescription = messages.first()!.cleanContent;
+                ticket.userDescriptionMessage = messages.first() as Message;
                 return true;
             })
             .catch(() => {

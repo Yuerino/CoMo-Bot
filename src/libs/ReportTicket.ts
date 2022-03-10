@@ -5,7 +5,7 @@ export class ReportTicket {
     public readonly id: number;
     public readonly user: User;
     public userDMChannel: DMChannel;
-    public userDescription?: string;
+    public userDescriptionMessage?: Message;
     public case?: "report" | "emergency";
     private readonly createByReaction: boolean = false;
     public readonly createTime: Date = new Date();
