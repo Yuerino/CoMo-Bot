@@ -55,7 +55,7 @@ To update your bot permissions, scopes and intents, please head to [Discord Deve
 
 - Your bot will be required at least these permissions and scopes in order to work properly
 
-![bot permissions](https://i.imgur.com/d40dqH7.png)
+![bot permissions](https://i.imgur.com/GXdmcq3.png)
 
 - Your bot should also have these intents enabled
 
