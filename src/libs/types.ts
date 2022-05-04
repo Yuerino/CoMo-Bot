@@ -53,6 +53,11 @@ export interface ReportManagerOptions {
     readonly expireTime?: number;
 }
 
+export interface VoiceManagerOptions {
+    readonly client: CoMoBot;
+    readonly deletionDelay?: number;
+}
+
 export interface CoMoBotConfig {
     readonly botToken: string;
     readonly guildIDs: string[];
