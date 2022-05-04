@@ -4,11 +4,13 @@ import * as fs from 'fs';
 import path from "path";
 import {ReportManager} from "./ReportManager";
 import {Command} from "./Command";
+import {VoiceManager} from "./VoiceManager";
 
 export class CoMoBot extends Client {
     public readonly commands: Collection<string, Command> = new Collection<string, Command>();
     public readonly config: CoMoBotConfig;
     public readonly reportManager: ReportManager;
+    public readonly voiceManager: VoiceManager;
 
     constructor(config: CoMoBotConfig) {
         super({
@@ -26,6 +28,7 @@ export class CoMoBot extends Client {
         });
         this.config = config;
         this.reportManager = new ReportManager({client: this, expireTime: 5 * 60 * 1000});
+        this.voiceManager = new VoiceManager({client: this, deletionDelay: 30 * 60 * 1000});
     }
 
     public async start() {
@@ -87,5 +90,6 @@ export class CoMoBot extends Client {
         }
 
         this.on("messageReactionAdd", this.reportManager.messageReactionAddHandler.bind(this.reportManager));
+        this.on("voiceStateUpdate", this.voiceManager.voiceStateUpdateHandler.bind(this.voiceManager));
     }
 }
