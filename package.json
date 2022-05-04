@@ -1,6 +1,6 @@
 {
   "name": "comobot",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A basic content moderation bot for 42 Wolfsburg",
   "main": "dist/comobot.ts",
   "scripts": {
